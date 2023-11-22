@@ -9,6 +9,7 @@
 
 import UIKit
 
+//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
 @IBDesignable open class BetterSegmentedControl: UIControl {
     private struct Constants {
         static let minimumIntrinsicContentSizeHeight: CGFloat = 32.0
@@ -21,9 +22,12 @@ import UIKit
     /// Indicates a no-segment-selected state.
     public static let noSegment = -1
     
+    public var restIndex = -1
     /// The selected index. Use `setIndex()` for setting the index.
-    public private(set) var index: Int
+    public var index: Int
     
+   
+
     /// The segments available for selection.
     public var segments: [BetterSegmentedControlSegment] {
         didSet {
@@ -280,7 +284,7 @@ import UIKit
     ///   - animated: Whether the change should be animated or not. Defaults to `true`.
     ///   - shouldSendValueChangedEvent: Whether the index change should trigger a `.valueChanged` event or not. Defaults to
     ///   `false`. This takes precedence over `alwaysAnnouncesValue`.
-    public func setIndex(_ index: Int, animated: Bool = true, shouldSendValueChangedEvent: Bool = false) {
+    private func setIndex(_ index: Int, animated: Bool = true, shouldSendValueChangedEvent: Bool = false) {
         guard segments.indices.contains(index) || index == Self.noSegment else { return }
         
         let previousIndex = self.index
@@ -394,6 +398,18 @@ import UIKit
         }
     }
     
+    public func updateSegment(with index: Int) {
+        self.index = index
+        
+        if index == -1 {
+            setIndex(-1)
+        }else {
+            setIndex(index)
+            self.applySegments(shouldResetIndex: false)
+        }
+       
+    }
+    
     // MARK: Helpers
     /// Updates the segments and triggers a layout refresh. Resets the index if needed.
     private func applySegments(shouldResetIndex: Bool = true) {
@@ -457,7 +473,7 @@ import UIKit
     }
     
     private func resetIndex() {
-        let newIndex = (segments.count > 0 ? 0 : -1)
+        let newIndex = self.restIndex
         setIndex(newIndex, animated: false, shouldSendValueChangedEvent: false)
     }
     
